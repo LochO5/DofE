@@ -87,7 +87,9 @@ void AV1Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AV1Character::Look);
-
+		
+		// Zooming
+		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &AV1Character::Zoom);
 	}
 	else
 	{
@@ -129,4 +131,10 @@ void AV1Character::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AV1Character::Zoom(const FInputActionValue& Value) //the potential problem
+{
+	float ZoomValue = Value.Get<float>();
+	CameraBoom->TargetArmLength = ZoomValue;
 }
