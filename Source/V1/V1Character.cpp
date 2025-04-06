@@ -135,6 +135,7 @@ void AV1Character::Look(const FInputActionValue& Value)
 
 void AV1Character::Zoom(const FInputActionValue& Value) //the potential problem
 {
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	float ZoomValue = Value.Get<float>();
 	CameraBoom->TargetArmLength = ZoomValue;
 }
