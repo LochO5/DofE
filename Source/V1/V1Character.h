@@ -46,7 +46,8 @@ class AV1Character : public ACharacter
 
 	//Zoom
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* ZoomAction;
+	UInputAction* ZoomActionAction;
+	
 
 
 public:

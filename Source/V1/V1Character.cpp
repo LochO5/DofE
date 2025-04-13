@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+//#include "CoreGlobals.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -39,7 +40,7 @@ AV1Character::AV1Character()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
-	// Create a camera boom (pulls in towards the player if there is a collision)
+	// Create a camera boom (pulls in towards the player if there is a collision) NOT THE PROBLEM
 	float CameraDistance = 400.0f; //200 is minimum
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -89,7 +90,9 @@ void AV1Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AV1Character::Look);
 		
 		// Zooming
-		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &AV1Character::Zoom);
+		UE_LOG(LogTemp, Warning, TEXT("Zoom1"))
+		//EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &AV1Character::Zoom);
+		UE_LOG(LogTemp, Warning, TEXT("Zoom2"))
 	}
 	else
 	{
@@ -133,9 +136,11 @@ void AV1Character::Look(const FInputActionValue& Value)
 	}
 }
 
+
 void AV1Character::Zoom(const FInputActionValue& Value) //the potential problem
 {
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	float ZoomValue = Value.Get<float>();
-	CameraBoom->TargetArmLength = ZoomValue;
+	//CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	//float ZoomValue = Value.Get<float>();
+	//CameraBoom->TargetArmLength = ZoomValue;
+	UE_LOG(LogTemp, Warning, TEXT("Zoom."))
 }
