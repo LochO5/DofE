@@ -73,6 +73,7 @@ void AV1Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+			Subsystem->AddMappingContext(ZoomMCTMappingContext, 0);
 		}
 	}
 	
@@ -91,7 +92,7 @@ void AV1Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		
 		// Zooming
 		UE_LOG(LogTemp, Warning, TEXT("Zoom1"))
-		//EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &AV1Character::Zoom);
+		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &AV1Character::Zoom);
 		UE_LOG(LogTemp, Warning, TEXT("Zoom2"))
 	}
 	else
