@@ -16,6 +16,7 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
 // AV1Character
+//Page 180
 
 AV1Character::AV1Character()
 {
@@ -73,7 +74,7 @@ void AV1Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-			Subsystem->AddMappingContext(ZoomMCTMappingContext, 0);
+			Subsystem->AddMappingContext(MyMCTMappingContext, 1);
 		}
 	}
 	
