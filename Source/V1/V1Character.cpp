@@ -74,7 +74,6 @@ void AV1Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-			Subsystem->AddMappingContext(MyMCTMappingContext, 1);
 		}
 	}
 	
@@ -141,8 +140,7 @@ void AV1Character::Look(const FInputActionValue& Value)
 
 void AV1Character::Zoom(const FInputActionValue& Value) //the potential problem
 {
-	//CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	//float ZoomValue = Value.Get<float>();
-	//CameraBoom->TargetArmLength = ZoomValue;
+	float ZoomValue = Value.Get<float>();
+	CameraBoom->TargetArmLength = ZoomValue * 20.0f;
 	UE_LOG(LogTemp, Warning, TEXT("Zoom."))
 }
