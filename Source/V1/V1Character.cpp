@@ -10,11 +10,13 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+//#include "CoreGlobals.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
 // AV1Character
+//Page 180
 
 AV1Character::AV1Character()
 {
@@ -39,10 +41,11 @@ AV1Character::AV1Character()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
-	// Create a camera boom (pulls in towards the player if there is a collision)
+	// Create a camera boom (pulls in towards the player if there is a collision) NOT THE PROBLEM
+	float CameraDistance = 400.0f; //200 is minimum
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
+	CameraBoom->TargetArmLength = CameraDistance; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 	
 	// Create a follow camera
@@ -86,7 +89,11 @@ void AV1Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AV1Character::Look);
-
+		
+		// Zooming
+		UE_LOG(LogTemp, Warning, TEXT("Zoom1"))
+		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &AV1Character::Zoom);
+		UE_LOG(LogTemp, Warning, TEXT("Zoom2"))
 	}
 	else
 	{
@@ -128,4 +135,12 @@ void AV1Character::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+
+void AV1Character::Zoom(const FInputActionValue& Value) //the potential problem
+{
+	float ZoomValue = Value.Get<float>();
+	CameraBoom->TargetArmLength = ZoomValue * 20.0f;
+	UE_LOG(LogTemp, Warning, TEXT("Zoom."))
 }
