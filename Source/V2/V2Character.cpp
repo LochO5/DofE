@@ -40,9 +40,10 @@ AV2Character::AV2Character()
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
+	float InitialZoomDistance = 400.0f; //200 is minimum
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
+	CameraBoom->TargetArmLength = InitialZoomDistance; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
 	// Create a follow camera
@@ -85,7 +86,11 @@ void AV2Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AV2Character::Look);
+		
+		// Zooming
+		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &AV2Character::Zoom);
 	}
+	
 	else
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
@@ -127,3 +132,14 @@ void AV2Character::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
+void AV2Character::Zoom(const FInputActionValue& Value)
+{
+	float ZoomAxisVector = Value.Get<float>();
+	float ZoomAmount = CameraBoom->TargetArmLength + 25.0f * ZoomAxisVector;
+	if (ZoomAmount > 200 && ZoomAmount < 600)
+	{
+		CameraBoom->TargetArmLength = ZoomAmount;
+	}
+}
+
+
