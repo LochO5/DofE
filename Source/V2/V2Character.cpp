@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "V1Character.h"
+#include "V2Character.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -10,15 +10,13 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-//#include "CoreGlobals.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
-// AV1Character
-//Page 180
+// AV2Character
 
-AV1Character::AV1Character()
+AV2Character::AV2Character()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -41,13 +39,13 @@ AV1Character::AV1Character()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
-	// Create a camera boom (pulls in towards the player if there is a collision) NOT THE PROBLEM
-	float CameraDistance = 400.0f; //200 is minimum
+	// Create a camera boom (pulls in towards the player if there is a collision)
+	float InitialZoomDistance = 400.0f; //200 is minimum
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = CameraDistance; // The camera follows at this distance behind the character	
+	CameraBoom->TargetArmLength = InitialZoomDistance; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
-	
+
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
@@ -57,26 +55,25 @@ AV1Character::AV1Character()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
-void AV1Character::BeginPlay()
-{
-	// Call the base class  
-	Super::BeginPlay();
-}
-
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void AV1Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AV2Character::NotifyControllerChanged()
 {
+	Super::NotifyControllerChanged();
+
 	// Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-	
+}
+
+void AV2Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
@@ -85,23 +82,22 @@ void AV1Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AV1Character::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AV2Character::Move);
 
 		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AV1Character::Look);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AV2Character::Look);
 		
 		// Zooming
-		UE_LOG(LogTemp, Warning, TEXT("Zoom1"))
-		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &AV1Character::Zoom);
-		UE_LOG(LogTemp, Warning, TEXT("Zoom2"))
+		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &AV2Character::Zoom);
 	}
+	
 	else
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
 
-void AV1Character::Move(const FInputActionValue& Value)
+void AV2Character::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -124,7 +120,7 @@ void AV1Character::Move(const FInputActionValue& Value)
 	}
 }
 
-void AV1Character::Look(const FInputActionValue& Value)
+void AV2Character::Look(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
@@ -136,11 +132,14 @@ void AV1Character::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
-
-
-void AV1Character::Zoom(const FInputActionValue& Value) //the potential problem
+void AV2Character::Zoom(const FInputActionValue& Value)
 {
-	float ZoomValue = Value.Get<float>();
-	CameraBoom->TargetArmLength = ZoomValue * 20.0f;
-	UE_LOG(LogTemp, Warning, TEXT("Zoom."))
+	float ZoomAxisVector = Value.Get<float>();
+	float ZoomAmount = CameraBoom->TargetArmLength + 25.0f * ZoomAxisVector;
+	if (ZoomAmount > 200 && ZoomAmount < 600)
+	{
+		CameraBoom->TargetArmLength = ZoomAmount;
+	}
 }
+
+

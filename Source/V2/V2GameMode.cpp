@@ -1,10 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "V1GameMode.h"
-#include "V1Character.h"
+#include "V2GameMode.h"
+#include "V2Character.h"
 #include "UObject/ConstructorHelpers.h"
 
-AV1GameMode::AV1GameMode()
+AV2GameMode::AV2GameMode()
 {
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter"));
