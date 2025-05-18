@@ -136,9 +136,15 @@ void AV2Character::Zoom(const FInputActionValue& Value)
 {
 	float ZoomAxisVector = Value.Get<float>();
 	float ZoomAmount = CameraBoom->TargetArmLength + 25.0f * ZoomAxisVector;
-	if (ZoomAmount > 200 && ZoomAmount < 600)
+	if (ZoomAmount < 150)
 	{
+		
+	}
+	else
+	{ if (ZoomAmount < 600)
+		{
 		CameraBoom->TargetArmLength = ZoomAmount;
+		}
 	}
 }
 
