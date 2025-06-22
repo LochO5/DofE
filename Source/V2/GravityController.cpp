@@ -2,7 +2,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-//Research is fun
+//fun.
 void AGravityController::UpdateRotation(float DeltaTime)
 {
 	FVector GravityDirection = FVector::DownVector;
